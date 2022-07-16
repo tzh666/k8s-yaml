@@ -4,10 +4,5 @@ metadata:
   name: cm-appvars
   namespace: default
 data:
-  apploglevel: info
   appdatadir: /var/data
-  key-serverxml: |   # 配置文件形式的cm,key-serverxml是文件名,value是配置文件的全部内容
-    a
-    b
-    ca
-    da 
+  apploglevel: info

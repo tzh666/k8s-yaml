@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: tzh
+  name: cm-test-pod
+  namespace: default
+spec:
+  containers:
+  - name: cm-test
+    image: busybox
+    command: ["/bin/sh","-c","env"]
+    envFrom:                 # 环境变量配置开始
+    - configMapRef:
+        name: test-cm        # 指定cm名称
+    env:                     # 环境变量配置开始
+    - name: APPLOGLEVEL      # 定义环境变量名称
+      valueFrom:             # 指定环境变量获取方式
+        configMapKeyRef:     # configMapKeyRef指定环境变量从cm中获取, 可选的还有fieldRef、resourceFieldRef、secretKeyRef
+          name: cm-appvars   # 指定从具体的cm(cm-appvars)中拿值
+          key: apploglevel   # key为apploglevel,对应的value就是改key的value值
+    - name: APPDATADIR       # 定义环境变量名称
+      valueFrom:             # 拿到appdatadir对应的值
+        configMapKeyRef:     # configMapKeyRef指定环境变量从cm中获取, 可选的还有fieldRef、resourceFieldRef、secretKeyRef
+          name: cm-appvars   # 指定从具体的cm(cm-appvars)中拿值
+          key: appdatadir    # appdatadir,对应的value就是改key的value值
+  restartPolicy: Never       # 停止后不启动
+  
+
+  
