@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cm-appfiles
+  namespace: default
+data:
+  key-serverxml: |
+    serverxmlserverxmlserverxmlserverxmlserverxmlserverxmlserverxmlserverxmlserverxml
+  key-logginproperties: |
+    logginpropertieslogginpropertieslogginpropertieslogginpropertieslogginproperties
+  nginx.conf:
+    nginxnginxnginxnginxnginxnginxnginxnginxnginxnginxnginxnginxnginxnginxnginxnginx

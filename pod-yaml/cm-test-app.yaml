@@ -1,0 +1,41 @@
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: cm-appfiles
+#   namespace: default
+# data:
+#   key-serverxml: |
+#     serverxmlserverxmlserverxmlserverxmlserverxmlserverxmlserverxmlserverxmlserverxml
+#   key-logginproperties: |
+#     logginpropertieslogginpropertieslogginpropertieslogginpropertieslogginproperties
+#   nginx.conf:
+#     nginxnginxnginxnginxnginxnginxnginxnginxnginxnginxnginxnginxnginxnginxnginxnginx
+# ---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cm-test-app
+  namespace: default
+spec:
+  containers:
+  - name: cm-test-app
+    image: kubeguide/tomcat-app:v1
+    ports:
+    - containerPort: 8080
+    volumeMounts:
+    - name: serverxml              # 引用 Volume的名称
+      mountPath: /configfiles      # 挂载到容器内的目录
+  volumes:
+  # 不使用items
+  - name: serverxml
+    configMap:
+      name: cm-appfiles            # 使用ConfigMap "cm-appfiles"
+  # 使用items
+  # - name: serverxml                # 定义volume的名字,供volumeMounts挂载到容器内
+  #   configMap:  
+  #     name: cm-appfiles            # 使用ConfigMap "cm-appfiles"
+  #     items:
+  #     - key: key-serverxml         # key=key-serverxml,对应cm-appfiles的key值
+  #       path: server.xml           # value作为文件名server.xml进行挂载,文件内容就是key=key-serverxml的value
+  #     - key: key-logginproperties  # 同理
+  #       path: loggin.properties    # 同理
