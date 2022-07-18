@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dapi-envars-fieldrf
+  namespace: default
+spec:
+  containers:
+  - name: dapi-test
+    image: busybox
+    command: ["sh","-c"]    # 启动命令
+    args:                   # 启动参数,启动参数会拼接到启动命令后面
+    - while true;do
+      echo -en \n;
+      printenv MY_NODE_NAME MY_POD_NAME MY_POD_NAMESPACE
+      printenv MY_POD_IP MY_POD_SERVICE_ACCOUNT
+      sleep 10;
+      done
+    env:
+    - name: MY_NODE_NAME             # 环境变量名称
+      valueFrom:
+        fieldRef:
+          fieldPath: spec.nodeName   # 注意: 环境变量不能直接设置value, Pod所在的Node名称
+    - name: MY_POD_NAME              # 环境变量名称
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.name   # 注意: 环境变量不能直接设置value,Pod的名称
+    - name: MY_POD_NAMESPACE         # 环境变量名称
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.namespace  # 注意: 环境变量不能直接设置value,Pod的ns name
+    - name: MY_POD_IP                    # 环境变量名称
+      valueFrom:
+        fieldRef:
+          fieldPath: status.podIP        # 注意: 环境变量不能直接设置value,Pod的IP
+    - name: MY_POD_SERVICE_ACCOUNT       # 环境变量名称
+      valueFrom:
+        fieldRef:
+          fieldPath: spec.serviceAccountName   # 注意: 环境变量不能直接设置value, Pod使用的SA name
+  restartPolicy: Never
