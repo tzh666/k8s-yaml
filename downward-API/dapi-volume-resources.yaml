@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dapi-vol-contain
+  namespace: default
+spec:
+  containers:
+  - name: client-cont
+    image: busybox
+    command: ["sh","-c","sleep 3600"]
+    volumeMounts:
+    - name: podinfo           # volume名称
+      mountPath: /etc/podinfo # 容器内路径
+    resources:
+      requests:
+        memory: 32Mi
+        cpu: 125m
+      limits:
+        memory: 32Mi
+        cpu: 125m  
+  volumes:                  
+    - name: podinfo           # volume名称
+      downwardAPI:            # 在Pod的volumes字段中使用downwardAPI的方法,通过fieldRef设置引用pod的元数据信息,将其设置到volume中的items中
+        items:
+          - path: "cpu_limit"                    # 挂载到Pod的file Name
+            resourceFieldRef:                    # 使用关键字resourceFieldRef
+              containerName: client-cont   # 容器名字,注意不是Pod Name
+              resource: limits.cpu                # 限制的cpu信息
+              divisor: 1m                        # 基数单位 cpu单位
+          - path: "cpu_request"                  # 挂载到Pod的file Name
+            resourceFieldRef:                    # 使用关键字resourceFieldRef
+              containerName: client-cont   # 容器名字,注意不是Pod Name
+              resource: requests.cpu                # 限制的cpu信息
+              divisor: 1m                        # 基数单位 cpu单位    
+# 验证结果
+# root@master01 downward-API]# kubectl exec -it  dapi-vol-contain -- cat /etc/podinfo/cpu_request
+# 125
+# [root@master01 downward-API]# kubectl exec -it  dapi-vol-contain -- cat /etc/podinfo/cpu_limit
+# 125
