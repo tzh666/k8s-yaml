@@ -24,3 +24,4 @@ spec:
       # [root@master01 pod-probe]# kubectl describe  po  liveness-exec | grep Exit 
       #  Exit Code:    137
       # 通过看Exit Code发现状态码是137,也就是文件不存在,所以是正常的,因为10s后,执行了rm -rf /tmp/health
+      # 那么想让容器不重启,改initialDelaySeconds<10,或者启动命令的sleep改>15即可
