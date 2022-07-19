@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata: 
+  labels:
+    test: liveness
+  name: liveness-exec
+  namespace: default
+spec:
+  containers:
+  - name: liveness
+    image: busybox
+    args:
+    - /bin/sh
+    - -c
+    - echo ok > /tmp/health; sleep 10; rm -rf /tmp/health; sleep 600
+    livenessProbe:      # 健康检查是容器级别的
+      exec:             # exec执行shell命令检查,shell名字执行成功返回值是 0
+        command:
+        - cat
+        - /tmp/health
+      initialDelaySeconds: 15  # 表示在第一次执行探针的时候要等待15秒，这样能够确保我们的容器能够有足够的时间启动起来
+      timeoutSeconds: 1        # 探测超时时间，默认1秒，最小1秒
+      # 注意我们这里设置第一次检查时间是15s,而rm -rf /tmp/health是在容器启动10s后删除的,也就说15后容器会自动重启
+      # [root@master01 pod-probe]# kubectl describe  po  liveness-exec | grep Exit 
+      #  Exit Code:    137
+      # 通过看Exit Code发现状态码是137,也就是文件不存在,所以是正常的,因为10s后,执行了rm -rf /tmp/health
