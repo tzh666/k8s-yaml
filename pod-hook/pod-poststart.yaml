@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hook-demo
+spec:
+  containers:
+  - name: hook-demo
+    image: nginx
+    lifecycle:                # 生命周期设置 
+      postStart:              # pod poststart
+        exec:                 # 使用exec、HTTP均可
+          command: ["/bin/sh", "-c", "echo Hello from the postStart handler > /usr/share/message"]
+
+
+# 创建成功后可以查看容器中 /usr/share/message 文件是否内容正确
+# [root@master01 pod-hook]# kubectl exec -it hook-demo  -- cat /usr/share/message
+# Hello from the postStart handler

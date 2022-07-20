@@ -13,5 +13,9 @@ spec:
       httpGet:                 # 健康检查的方式
         path: /_status/healthz # http get请求url
         port: 80               # 检查的tcp端口
+        httpHeaders:           # 设置请求头
+        - name: X-Custom-Header
+          value: Awesom
       initialDelaySeconds: 30  # 表示在第一次执行探针的时候要等待15秒，这样能够确保我们的容器能够有足够的时间启动起来
       timeoutSeconds: 1        # 探测超时时间，默认1秒，最小1秒
+      failureThreshold: 30     # 探测成功后，最少连续探测失败多少次才被认定为失败。默认是 3，最小值是 1

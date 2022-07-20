@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hook-demo2
+spec:
+  containers:
+  - name: hook-demo2
+    image: nginx
+    lifecycle:
+      preStop:
+        exec:
+          command: ["/usr/sbin/nginx","-s","quit"]  # 优雅退出
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hook-demo3
+spec:
+  volumes:
+  - name: message
+    hostPath:
+      path: /tmp
+  containers:
+  - name: hook-demo2
+    image: nginx
+    ports:
+    - containerPort: 80
+    volumeMounts:
+    - name: message
+      mountPath: /usr/share/
+    lifecycle:
+      preStop:
+        exec:
+          command: ['/bin/sh', '-c', 'echo Hello from the preStop Handler > /usr/share/message']
+
+####
+# 创建完成后，我们可以直接删除 hook-demo2 这个 Pod,在容器删除之前会执行 preStop 里面的优雅关闭命令
+# 这个用法在后面我们的滚动更新的时候用来保证我们的应用零宕机非常有用
+# 第二个 Pod 我们声明了一个 hostPath 类型的 Volume，在容器里面声明挂载到了这个 Volume，所以当我们删除 Pod，退出容器之前，在容器里面输出的信息也会同样的保存到宿主机（一定要是 Pod 被调度到的目标节点）的 /tmp 目录下面
