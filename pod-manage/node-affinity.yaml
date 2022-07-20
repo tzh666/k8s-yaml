@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-affinity
+  labels:
+    app: node-affinity    # 这个label用于关联Pod
+  namespace: default
+spec:
+  replicas: 4
+  selector:
+    matchLabels:          # Pod的labels 用户关联Deployment
+      app: node-affinity  # 
+  template:               # 此处开始定义容器的信息
+    metadata:
+      labels:             # 容器的标签
+        app: node-affinity   
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80 # 容器端口,随意改,name不改svc就不用改
+          name: nginxweb    # 容器内端口名字,用于绑定svc,更改容器端口时不需要更改name
+      affinity:             # 亲和性配置,这个 Pod 首先是要求不能运行在 master01 这个节点上，如果有个节点满足 com=tzh 的话就优先调度到这个节点上
+        nodeAffinity:       # 节点亲和性
+          requiredDuringSchedulingIgnoredDuringExecution:  # 硬策略,不调度到节点主机名为master01的节点上
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: NotIn
+                values:
+                - master01
+                - node03
+                - node04
+          preferredDuringSchedulingIgnoredDuringExecution:  # 软策略,注意如果不指定硬策略不能调度到node3 4,这个pod也是会跑过去的
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: com
+                operator: In
+                values:
+                - tzh
