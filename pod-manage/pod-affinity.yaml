@@ -1,0 +1,55 @@
+# 首先搞一个参照目标Pod
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-flag
+  labels:
+    app: nginx
+    security: "flagpod"
+spec:
+  containers:
+  - name: pod-flag
+    image: nginx
+  nodeSelector:            # Pod级别的,不是容器级别的
+    com: qaz               # kubectl label nodes node03 com=qaz
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pod-affinity
+  labels:
+    app: pod-affinity
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: pod-affinity
+  template:
+    metadata:
+      labels:
+        app: pod-affinity
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+          name: nginxweb
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:  # 硬策略
+          - labelSelector:
+              matchExpressions:
+              - key: security
+                operator: In
+                values:
+                - flagpod
+            topologyKey: kubernetes.io/hostname             # 通过hostname作为域调度
+
+# 调度结果肯定是都去node03了
+# [root@master01 pod-manage]# kubectl get po -owide 
+# NAME                            READY   STATUS    RESTARTS   AGE   IP            NODE     NOMINATED NODE   READINESS GATES
+# pod-affinity-7fb7cb8745-gthf5   1/1     Running   0          95s   10.244.3.14   node03   <none>           <none>
+# pod-affinity-7fb7cb8745-n589m   1/1     Running   0          95s   10.244.3.13   node03   <none>           <none>
+# pod-affinity-7fb7cb8745-xkk8z   1/1     Running   0          95s   10.244.3.12   node03   <none>           <none>
+# pod-flag                        1/1     Running   0          95s   10.244.3.11   node03   <none>           <none>

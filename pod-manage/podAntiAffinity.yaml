@@ -1,0 +1,50 @@
+# 首先搞一个参照目标Pod
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-flag
+  labels:
+    app: nginx
+    security: "flagpod"
+spec:
+  containers:
+  - name: pod-flag
+    image: nginx
+  nodeSelector:            # Pod级别的,不是容器级别的
+    com: qaz               # kubectl label nodes node03 com=qaz
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pod-affinity
+  labels:
+    app: pod-affinity
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: pod-affinity
+  template:
+    metadata:
+      labels:
+        app: pod-affinity
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+          name: nginxweb
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:  # 硬策略
+          - labelSelector:
+              matchExpressions:
+              - key: security
+                operator: In
+                values:
+                - flagpod
+            topologyKey: kubernetes.io/hostname             # 通过hostname作为域调度
+
+# 预期结果是这些deploy的po 不会去node3上
+# [root@master01 pod-manage]# kubectl get po -owide  # 查看结果即可
