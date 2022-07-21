@@ -1,5 +1,5 @@
-apiVersion: v1
-kind: PriortyClass
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
 metadata:
   name: high-priority
 value: 1000000        # value 为 32 位整数的优先级，该值越大，优先级越高
