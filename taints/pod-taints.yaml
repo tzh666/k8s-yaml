@@ -1,0 +1,12 @@
+tolerations:
+- key: "key"
+  operator: "Equal"
+  value: "value"
+  effect: "NoSchedule"
+
+--- 
+# 或者
+tolerations:
+- key: "key"
+  operator: "Exists"
+  effect: "NoSchedule"

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: PriortyClass
+metadata:
+  name: high-priority
+value: 1000000        # value 为 32 位整数的优先级，该值越大，优先级越高
+globalDefault: false  # globalDefault 用于未配置 PriorityClassName 的 Pod，整个集群中应该只有一个 PriorityClass 将其设置为 true
+description: "tzhtzh" # 对这个PriortyClass的描述
