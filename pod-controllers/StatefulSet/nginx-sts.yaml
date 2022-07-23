@@ -37,14 +37,14 @@ spec:
     metadata:
       labels:
         app: nginx
-    spec:
+    spec: 
       containers:
       - name: nginx
         image: nginx
         ports:
         - name: web
           containerPort: 80
-        volumeMounts:
+        volumeMounts:     # 容器内部
         - name: www       # volumeClaimTemplates的名字
           mountPath: /usr/share/nginx/html
   # 该属性会自动创建一个 PVC 对象，其实这里就是一个 PVC 的模板，和 Pod 模板类似，PVC 被创建后会自动去关联当前系统中和他合适的 PV 进行绑定
