@@ -1,0 +1,58 @@
+# apiVersion: v1
+# kind: PersistentVolume
+# metadata:
+#   name: pv001
+# spec:
+#   capacity:
+#     storage: 1Gi
+#   accessModes:
+#   - ReadWriteOnce
+#   hostPath:
+#     path: /tmp/pv001
+# ---
+# apiVersion: v1
+# kind: PersistentVolume
+# metadata:
+#   name: pv002
+# spec:
+#   capacity:
+#     storage: 1Gi
+#   accessModes:
+#   - ReadWriteOnce
+#   hostPath:
+#     path: /tmp/pv002
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: web
+  namespace: default
+spec:
+  serviceName: nginx   # serviceName为Headless Service的名字，创建StatefulSet时，必须指定Headless Service名称
+  replicas: 2          # 2 副本,肯定要有2pv
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - name: web
+          containerPort: 80
+        volumeMounts:
+        - name: www       # volumeClaimTemplates的名字
+          mountPath: /usr/share/nginx/html
+  # 该属性会自动创建一个 PVC 对象，其实这里就是一个 PVC 的模板，和 Pod 模板类似，PVC 被创建后会自动去关联当前系统中和他合适的 PV 进行绑定
+  volumeClaimTemplates:   # Pod级别的
+  - metadata:
+      name: www
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
