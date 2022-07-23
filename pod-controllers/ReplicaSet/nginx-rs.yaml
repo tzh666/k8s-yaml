@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: nginx-rs
+  namespace: default
+spec:
+  replicas: 3  # 期望Pod的数量
+  selector:    # 标签选择器,必须匹配 Pod模板中的标签
+    matchLabels:
+      app: nginx
+  template:    # Pod 模板开始
+    metadata:
+      labels:  # 标签必须跟spec.selector.matchLabels的保持一致
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        ports:
+        - containerPort: 80
+
+# 注意如果标签不保持一致,apply -f 的时候会报错
+# The ReplicaSet "nginx-rs" is invalid: spec.template.metadata.labels: Invalid value: map[string]string{"app":"nginx-x"}: `selector` does not match template `labels`

@@ -1,0 +1,11 @@
+selector:  
+  matchLabels:
+    app: nginx
+
+---
+selector:
+  matchExpressions:  # 该选择器要求 Pod 包含名为 app 的标签
+  - key: app
+    operator: In
+    values:  # 并且标签的值必须是 nginx
+    - nginx 
