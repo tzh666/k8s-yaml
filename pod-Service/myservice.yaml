@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: myservice
+  namespace: default
+spec:
+  selector:
+    app: myapp          # 通过这个标签去绑定相同标签的pod的ip(ep列表)
+  sessionAffinity: None # session亲和性
+  ports:
+  - protocol: TCP       # 协议类型,默认TCP
+    port: 80            # 当前svc暴露的端口
+    targetPort: 8080    # 后端的端口
+    name: myapp-http    # 端口名字
+  type: ClusterIP       # svc类型
+  
