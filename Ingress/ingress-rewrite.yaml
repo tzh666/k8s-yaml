@@ -1,0 +1,22 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: todo
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/app-root: /app/           # 注解 app-root: 访问主域名的时候会自动跳转到我们指定的 app-root 目录下面,相当于在域名后面拼接这个字符串/app/
+    nginx.ingress.kubernetes.io/rewrite-target: /$2       # rewrite-target 类似于nginx的rewrite
+    nginx.ingress.kubernetes.io/configuration-snippet: |  # configuration-snippet 对静态资源做一次跳转
+      rewrite ^(/app)$ $1/ redirect;                      # 在url最末尾加 "/", 使访问http://todo.tzh.com/app的时候拼接成http://todo.tzh.com/app/,添加后我们的应用就都会以 / 这样的 slash 结尾了
+      rewrite ^/stylesheets/(.*)$ /app/stylesheets/$1 redirect;  # 添加 /app 前缀
+      rewrite ^/images/(.*)$ /app/images/$1 redirect;            # 添加 /app 前缀
+spec:
+  rules:                      # 一个Ingress可以配置多个rules
+  - host: todo.tzh.com        # 所代理的域名, 域名配置，可以不写，匹配*，或者写一半 *.bar.com
+    http:
+      paths:
+      - backend:
+          serviceName: todo   # 所代理svc的名字
+          servicePort: 3000   # svc使用的cluster端口
+        path: /app(/|$)(.*)   # 相当于nginx的location配合，同一个host可以配置多个path
+                     
