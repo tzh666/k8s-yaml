@@ -1,0 +1,22 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: monitoring
+aggregationRule:
+  clusterRoleSelectors:  # 集群Role Label, 当然这个k v是自己设置的string
+  - matchLabels:         # 此处类似于设置了一个Label, 然后在新增一个ClusterRole的时候绑定这个标签,就会自动聚合
+      rbac.example.com/aggregate-to-monitoring: "true"
+rules: []                # k8s会填充、合并的结果,填充其他的ClusterRole
+---
+# 创建个包含以上标签的ClusterRole,则系统会自动为聚合ClusterRole设置rules
+# 例如创建个查看 svc ep po的ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: monitoring-ep
+  labels:
+    rbac.example.com/aggregate-to-monitoring: "true"   # 指定标签
+rules:
+- apiGroups: [""]                                      # api组
+  resources: ["services","endpoints","pods"]           # 可操作的资源对象
+  verbs: ["get","list","watch","delete"]               # 可操作资源对象的权限
