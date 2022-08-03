@@ -5,5 +5,5 @@ metadata:
   namespace: default
 rules:
 - apiGroups: [""]     # 空字符串,表示 Core API Group
-  resources: ["pods"] # 
+  resources: ["pods"] # 这个Role只可以操作Pod,操作方式在下面的verbs[]
   verbs: ["get","watch","list"] 

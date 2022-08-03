@@ -2,7 +2,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: read-pods       # 
-  namespace: default    # 
+  namespace: default    # 权限仅在该ns下起作用
 subjects:
 - kind: User
   name: jane
