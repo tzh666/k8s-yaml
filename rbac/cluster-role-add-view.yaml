@@ -1,0 +1,10 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: add-view
+  labels:
+    rbac.authorization.k8s.io/aggregate-to-view: "true"  # 打上view的label,就可以将这个ClusterRole(add-view)的权限聚合到view中
+rules:
+  - apiGroups: [""]                                      # api组
+    resources: ["jobs","crontabs"]                       # 可操作的资源对象
+    verbs: ["get","list","watch","delete"]               # 可操作资源对象的权限
