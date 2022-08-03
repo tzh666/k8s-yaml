@@ -1,0 +1,13 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: read-pods       # 
+  namespace: default    # 
+subjects:
+- kind: User
+  name: jane
+roleRef:                # 角色绑定信息 
+  kind: Role            # 绑定的对象是角色,也可以是集群角色
+  name: pod-reader      # 绑定的Role name
+  apiGroup: rbac.authorization.k8s.io  # 
+# 同一个ns中的Role进行绑定, 此绑定完成的授权: 允许用户jane读取ns default的Pod资源信息
