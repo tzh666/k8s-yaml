@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: security-context-pod-demo
+spec:
+  volumes:
+  - name: sec-ctx-vol
+    emptyDir: {}
+  securityContext:
+    runAsUser: 1000         # 字段指定了该 Pod 中所有容器的进程都以 UID 1000 的身份运行
+    runAsGroup: 3000        # runAsGroup 字段指定了该 Pod 中所有容器的进程都以 GID 3000 的身份运行,如果省略该字段，容器进程的 GID 为 root(0),容器中创建的文件，其所有者为 userID 1000，groupID 3000
+    fsGroup: 2000           # 字段指定了该 Pod 的 fsGroup 为 2000,数据卷 （对应挂载点 /pod/demo 的数据卷为 sec-ctx-demo） 的所有者以及在该数据卷下创建的任何文件，其 GID 都为 2000
+  containers:
+  - name: sec-ctx-demo
+    image: busybox
+    command: ["sh", "-c", "sleep 60m"]
+    volumeMounts:
+    - name: sec-ctx-vol
+      mountPath: /pod/demo
+    securityContext:
+      allowPrivilegeEscalation: false

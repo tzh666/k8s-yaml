@@ -3,11 +3,11 @@ kind: RoleBinding
 metadata:
   name: read-secrets        # 
   namespace: development    # 权限仅在该ns下起作用
-subjects:
-- kind: User
-  name: dave
+subjects:                   # 主体 创建用户
+- kind: User                # 指定类型是User
+  name: dave                # 用户要自己创建
 roleRef:                       # 角色绑定信息 
   kind: ClusterRole            # 绑定的对象是角色,也可以是集群角色
   name: secret-reader          # 绑定的Role name
-  apiGroup: rbac.authorization.k8s.io  # 
+  apiGroup: rbac.authorization.k8s.io  # 留空字符串也可以，则使用当前的apiGroup
 # 
