@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Pod
+metadata: 
+  name: volume-test
+  namespace: default
+  labels:
+    app: nginx
+spec:
+  containers:
+  - image: busybox
+    name: all-in-one
+    command: 
+    - sleep
+    - 3600s
+    volumeMounts:
+    - name: all-in-one
+      mountPath: "/projected-volume"  # 容器内部路径
+      readOnly: true                  # 只读
+  volumes:
+  - name: all-in-one                  # volume name
+    projected:
+      sources:
+      - secret:
+          name: mysecret
+          items:
+            - key: username               # 名为mysecret的secret的key是 username
+              path: my-group/my-username  # 文件名
+      - configMap:
+          name: cm-appfile
+          items:            
+            - key: key-serverxml 
+              path: my-group/my-config
+      - downwardAPI:
+          items:
+            - path: labels                  # 文件名
+              fieldRef:
+                fieldPath: metadata.labels  # 文件值
+
+
+    
+  
