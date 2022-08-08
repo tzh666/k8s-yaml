@@ -12,7 +12,7 @@ data:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: cp-test-app
+  name: cm-test-app
   namespace: default
 spec:
   containers:
