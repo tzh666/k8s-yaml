@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata: 
+  name: sa-token-test
+  namespace: default
+spec:
+  containers:
+  - name: sa-test
+    image: busybox
+    command: 
+    - ls 
+    - /service-account
+    volumeMounts:
+    - name: token-volx
+      mountPath: "/service-account"
+      readOnly: true
+  volumes:
+  - name: token-volx
+    projected:
+      sources:
+      - serviceAccountToken:
+          audience: api            # 预期受众的名称,token的接收者必须设置其中的audience来标识自己,否则应该拒绝该Token,可选字段,默认api
+          expirationSeconds: 3600  # sa token过期时间,默认1h,至少10min, 可以修改kube-apiserver的启动参数控制该时间
+          path: token              # 挂载到目录的相对路径name
+
+   
