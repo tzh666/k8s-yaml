@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-pod
+  namespace: default
+spec:
+  containers:
+  - name: test-pod
+    image: busybox
+    command: 
+    - sleep
+    - 3600s
+    volumeMounts:
+    - name: test-v1
+      mountPath: /host-data     # 容器内部目录
+  volumes:
+  - name: test-v1
+    hostPath:
+      path: /data               # 宿主机目录
+      type: DirectoryOrCreate   # 可选,如果宿主机目录不存在,则自动创建
