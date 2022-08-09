@@ -14,7 +14,7 @@ spec:
     - name: test-v1
       mountPath: /host-data     # 容器内部目录
   volumes:
-  - name: test-v1
+  - name: test-v1               # volume 名字
     hostPath:
       path: /data               # 宿主机目录
       type: DirectoryOrCreate   # 可选,如果宿主机目录不存在,则自动创建
