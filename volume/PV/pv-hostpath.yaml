@@ -1,0 +1,51 @@
+# 创建PV
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-hostpath         # pv名字
+  labels:                   # pv labels
+    type: local             # type=local
+spec:
+  storageClassName: manual  # 该名称用来将PersistentVolumeClaim请求绑定到该PersistentVolum
+  capacity:
+    storage: 5Gi            # PV容量
+  hostPath:                 # hostPath类型的pv
+    path: "/data/k8s/test/hostpath"
+  accessModes:
+  - ReadWriteOnce           # 访问模式
+  persistentVolumeReclaimPolicy: Retain # 回收策略
+---
+# 创建PVC
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-hostpath
+spec:
+  storageClassName: manual           # 必须跟PV的storageClassName保持一致才能绑定上
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi                   # 申请PVC的大小,小于等于PV大小才行
+---
+# 创建Pod
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pv-hostpath-pod
+spec:
+  containers:
+  - name: task-pv-container
+    image: nginx
+    ports:
+    - containerPort: 80
+    volumeMounts:            
+    - mountPath: "/usr/share/nginx/html" # 容器内部路径
+      name: pv-hostpath                  # volume 名字
+  nodeSelector:                          # 调度
+    kubernetes.io/hostname: node01
+  volumes:                               # 挂载
+  - name: pv-hostpath                    # volume 名字
+    persistentVolumeClaim:               # 表示使用PVC
+      claimName: pvc-hostpath            # PVC 名字
+  

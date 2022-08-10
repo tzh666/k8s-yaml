@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-hostpath
+spec:
+  storageClassName: manual           # 必须跟PV的storageClassName保持一致才能绑定上
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi                   # 申请PVC的大小,小于等于PV大小才行
