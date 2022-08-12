@@ -9,7 +9,7 @@ spec:
   storageClassName: manual  # 该名称用来将PersistentVolumeClaim请求绑定到该PersistentVolum
   capacity:
     storage: 5Gi            # PV容量
-  hostPath:                 # hostPath类型的pv
+  hostPath:                 # 表明它是一个hostPath类型的pv
     path: "/data/k8s/test/hostpath"
   accessModes:
   - ReadWriteOnce           # 访问模式
