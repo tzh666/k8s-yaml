@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: heketi-service-account
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: heketi
+  namespace: default
+rules:
+- apiGroups: [""]                   # 空字符串,表示 Core API Group
+  resources: ["pods","services","endpoints"] # 这个Role只可以操作Pod\svc\ep,操作方式在下面的verbs[]
+  verbs: ["get","watch","list"]
+- apiGroups: [""]                   # 空字符串,表示 Core API Group
+  resources: ["pods/exec"]         
+  verbs: ["create"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: heketi          # 
+  namespace: default    # 权限仅在该ns下起作用
+subjects:
+- kind: ServiceAccount  # 类型是sa,说明这个sa有role为heketi的权限
+  name: heketi-service-account
+roleRef:                # 角色绑定信息 
+  kind: Role            # 绑定的对象是角色,也可以是集群角色
+  name: heketi          # 绑定的Role name
+  apiGroup: rbac.authorization.k8s.io  # 默认
