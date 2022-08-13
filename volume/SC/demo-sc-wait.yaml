@@ -1,0 +1,16 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: standarf                      # SC name
+  namespace: default                  # SC ns
+provisioner: kubernetes.io/gce-pd     # 后端资源提供者
+parameters:                           # 存储参数
+  type: pd-standard                   # 存储参数中的类型设置
+reclaimPolicy: Retain                 # 资源回收策略
+volumeBindingMode: WaitForFirstConsumer   # 存储绑定模式
+allowTopologies:
+- matchLabelExpressions:              # PV 在满足这些条件的Node允许创建  zone=us-centrall-a or =us-centrall-a
+  - key: failure-doman.beta.kubernetes.io/zone
+    values:
+    - us-centrall-a
+    - us-centrall-b
