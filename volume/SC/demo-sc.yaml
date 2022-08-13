@@ -1,0 +1,13 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: standard                      # SC name
+  namespace: default                  # SC ns
+provisioner: kubernetes.io/aws-ebs    # 后端资源提供者
+parameters:                           # 存储参数
+  type: gp2                           # 存储参数中的类型设置
+reclaimPolicy: Retain                 # 资源回收策略
+allowVolumeExpansion: true            # 是否允许扩容
+mountOptions:                         # 挂载选项
+  - debug
+volumeBindingMode: Immediate          # 存储绑定模式
