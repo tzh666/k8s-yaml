@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: nginx-ds
+  name: nginx-dss
   namespace: default
 spec:
   selector:
