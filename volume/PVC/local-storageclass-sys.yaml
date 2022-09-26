@@ -1,0 +1,53 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  annotations:
+  name: storageclass-local-stat-redis
+provisioner: kubernetes.io/no-provisioner
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: storageclass-local-stat-redis
+  namespace: whalebase
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: redis-storage-pv-volume-stat-redis-00
+  labels:
+    redis: data-stat-redis-00
+spec:
+  storageClassName: storageclass-local-stat-redis
+  capacity:
+    # change capacity according to real machines
+    storage: 100G
+  accessModes:
+    - ReadWriteOnce
+  local:
+    path: "/data0/locals/stat-redis/data0"
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - "node-1"
+---
+  volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: redis-cluster-data-stat-redis
+      spec:
+        storageClassName: storageclass-local-stat-redis
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 100G
+
